@@ -12,7 +12,7 @@ import (
 
 var movieList = make(map[string][]string, 0)
 
-func ParserWeb(categoryID int,count int, isFive bool)map[string][]string{
+func ParserWeb(categoryID int, count int, isFive bool) map[string][]string {
 	client := &http.Client{
 		Timeout: 30 * time.Second,
 	}
@@ -26,14 +26,6 @@ func ParserWeb(categoryID int,count int, isFive bool)map[string][]string{
 		if err != nil {
 			log.Fatal(err)
 		} else {
-			/*FIND ALL
-			data := doc.Find(".nm-collections-title-name")
-			exchangeList = make(map[string]string, data.Length())
-			data.Each(func(i int, s *goquery.Selection) {
-				exchangeList[strconv.Itoa(i)] = s.Text()
-			})
-			return exchangeList
-			*/
 
 			section := doc.Find(".nm-collections-row")
 			section.Each(func(i int, s *goquery.Selection) {
@@ -55,8 +47,8 @@ func ParserWeb(categoryID int,count int, isFive bool)map[string][]string{
 							return
 						}
 						var maxlength = len(s2.Text())
-						if len(s2.Text()) > 25 {
-							maxlength = 25
+						if len(s2.Text()) > 30 {
+							maxlength = 30
 						}
 						list = append(list, strconv.Itoa(i2+1)+"."+s2.Text()[:maxlength])
 					})

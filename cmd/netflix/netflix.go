@@ -10,41 +10,41 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func init() {
-	NetFlixCmd().Flags().BoolP("five", "f", false, "Kategori sayısı 3 yerine => 5 kabul edilir.")
-	NetFlixCmd().Flags().IntP("category", "c", core.NewNetFlixCategory().IlkUc, "Netflix'den çekilecek Kategori Grubu: '-f'(5li grup) var ise 1 ile 3 yok is 1 ile 5 arasında")
-	NetFlixCmd().Flags().IntP("rowcount", "r", 5, "Kategori bazlı toplam çekilecek film sayısı. 1 ile 10 arasında")
-}
 func NetFlixCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:   "netflix",
 		Short: "run netflix",
 		RunE:  netflix,
 	}
-
-	//Added Flags
+	rootCmd.Flags().BoolP("five", "f", false, "Kategori sayısı 3 yerine => 5 kabul edilir.")
+	rootCmd.Flags().IntP("category", "c", 1, "Netflix'den çekilecek Kategori Grubu: '-f'(5li grup) var ise 1 ile 3 yok is 1 ile 5 arasında")
+	rootCmd.Flags().IntP("rowcount", "r", 5, "Kategori bazlı toplam çekilecek film sayısı. 1 ile 10 arasında")
+	
 	return rootCmd
 }
 
 func netflix(cmd *cobra.Command, args []string) error {
 
 	isFive, err := cmd.Flags().GetBool("five")
+	if err != nil {
+		return err
+	}
 	category, err := cmd.Flags().GetInt("category")
-	//Girilen category -c flagi yanlış ise, default 1 atanır.
-	if err != nil || (!isFive && category > 5) || (isFive && category > 3) || category < 1 {
-		category = core.NewNetFlixCategory().IlkUc
+	if err != nil {
+		return err
 	}
-	//Girilen rowcount 10'dan büyük ise default 5 atanır.
+
 	rowcount, err := cmd.Flags().GetInt("rowcount")
-	if err != nil || rowcount > 10 {
-		rowcount = 5
+	if err != nil {
+		return err
 	}
-	getMovieCategorys(category, rowcount, isFive)
+
+	getMovieCategorys(&category, rowcount, isFive)
 	return nil
 }
 
-func getMovieCategorys(categoryID int, count int, isFive bool) {
-	moveData := parser.ParserWeb(categoryID, count, isFive)
+func getMovieCategorys(categoryID *int, count int, isFive bool) {
+	moveData := parser.ParserWeb(*categoryID, count, isFive)
 
 	categories := make([]string, 0)
 	movieList := make([][]string, 0)
